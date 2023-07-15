@@ -9,7 +9,11 @@
 		"check": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json",
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"lint": "prettier --plugin-search-dir . --check . && eslint .",
-		"format": "prettier --plugin-search-dir . --write ."
+		"format": "prettier --plugin-search-dir . --write .",
+        "diff": "supabase db diff --schema public",
+        "db-reset": "supabase db reset",
+        "typegen": "supabase gen types typescript --local > src/types/supabase.ts",
+        "newmigration": "supabase migration new"
 	},
 	"devDependencies": {
 		"@floating-ui/dom": "^1.4.5",

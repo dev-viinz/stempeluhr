@@ -5,7 +5,7 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
-	import { AppShell, AppBar, AppRail, AppRailAnchor } from '@skeletonlabs/skeleton';
+	import { AppShell, AppBar, AppRail, AppRailAnchor, LightSwitch } from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -39,7 +39,7 @@
 		<!-- App Bar -->
 		<AppBar>
 			<svelte:fragment slot="lead">
-				<strong class="text-xl uppercase">Clock it!</strong>
+				<a href="/"><strong class="text-xl uppercase">Clock it!</strong></a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
                 {#if profile?.username}
@@ -48,10 +48,16 @@
 				{#if !data.session}
 					<a class="btn btn-sm variant-ghost-surface" href="/login" rel="noreferrer"> Login </a>
 				{:else}
+                    {#if !$page.url.pathname.startsWith('/app')}
+                         <a class="btn btn-sm variant-ghost-surface" href="/app">
+                             To the app
+                         </a>
+                    {/if}
 					<button class="btn btn-sm variant-ghost-surface" on:click={handleSignOut}>
 						Logout
 					</button>
 				{/if}
+                <LightSwitch />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
