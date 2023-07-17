@@ -5,7 +5,16 @@
 	import '@skeletonlabs/skeleton/styles/skeleton.css';
 	// Most of your app wide CSS should be put in this file
 	import '../app.postcss';
-	import { AppShell, AppBar, AppRail, AppRailAnchor, LightSwitch, Toast } from '@skeletonlabs/skeleton';
+	import {
+		AppShell,
+		AppBar,
+		AppRail,
+		AppRailAnchor,
+		LightSwitch,
+		Toast,
+		TabGroup,
+		TabAnchor
+	} from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { invalidate, invalidateAll } from '$app/navigation';
 	import { page } from '$app/stores';
@@ -45,59 +54,100 @@
 				<a href="/"><strong class="text-xl uppercase">Clock it!</strong></a>
 			</svelte:fragment>
 			<svelte:fragment slot="trail">
-                {#if profile?.username}
-                     <span>Logged in as: {profile.username}</span>
-                {/if}
+				{#if profile?.username}
+					<span>Logged in as: {profile.username}</span>
+				{/if}
 				{#if !data.session}
 					<a class="btn btn-sm variant-ghost-surface" href="/login" rel="noreferrer"> Login </a>
 				{:else}
-                    {#if !$page.url.pathname.startsWith('/app')}
-                         <a class="btn btn-sm variant-ghost-surface" href="/app">
-                             To the app
-                         </a>
-                    {/if}
+					{#if !$page.url.pathname.startsWith('/app')}
+						<a class="btn btn-sm variant-ghost-surface" href="/app"> To the app </a>
+					{/if}
 					<button class="btn btn-sm variant-ghost-surface" on:click={handleSignOut}>
 						Logout
 					</button>
 				{/if}
-                <LightSwitch />
+				<LightSwitch />
 			</svelte:fragment>
 		</AppBar>
 	</svelte:fragment>
 
 	<svelte:fragment slot="sidebarLeft">
 		{#if $page.data.session && $page.url.pathname.startsWith('/app')}
-			<AppRail>
-				<svelte:fragment slot="lead">
-					<AppRailAnchor href="/app" selected={$page.url.pathname === '/app'}>
-                        <svelte:fragment slot="lead">
-                            <HomeIcon />
-                        </svelte:fragment>
-                        Home
-                    </AppRailAnchor>
-				</svelte:fragment>
-				<!-- --- -->
-				<AppRailAnchor href="/app/clock" selected={$page.url.pathname === '/app/clock'}>
+			<div class="hidden md:contents">
+				<AppRail>
 					<svelte:fragment slot="lead">
-                        <ClockIcon />
-                    </svelte:fragment>
-                    Clock
-				</AppRailAnchor>
-				<!-- --- -->
-				<svelte:fragment slot="trail">
-					<AppRailAnchor
-						href="/app/account"
-						selected={$page.url.pathname === '/app/account'}
-						title="Account">
-                        <svelte:fragment slot="lead">
-                            <UserIcon />
-                        </svelte:fragment>
-                        Account
+						<AppRailAnchor href="/app" selected={$page.url.pathname === '/app'}>
+							<svelte:fragment slot="lead">
+								<HomeIcon />
+							</svelte:fragment>
+							Home
+						</AppRailAnchor>
+					</svelte:fragment>
+					<!-- --- -->
+					<AppRailAnchor href="/app/clock" selected={$page.url.pathname === '/app/clock'}>
+						<svelte:fragment slot="lead">
+							<ClockIcon />
+						</svelte:fragment>
+						Clock
 					</AppRailAnchor>
-				</svelte:fragment>
-			</AppRail>
+					<!-- --- -->
+					<svelte:fragment slot="trail">
+						<AppRailAnchor
+							href="/app/account"
+							selected={$page.url.pathname === '/app/account'}
+							title="Account"
+						>
+							<svelte:fragment slot="lead">
+								<UserIcon />
+							</svelte:fragment>
+							Account
+						</AppRailAnchor>
+					</svelte:fragment>
+				</AppRail>
+			</div>
 		{/if}
 	</svelte:fragment>
 	<!-- Page Route Content -->
 	<slot />
+    <svelte:fragment slot="footer">
+        {#if $page.data.session && $page.url.pathname.startsWith('/app')}
+            <div class="contents md:hidden text-center">
+                <TabGroup
+                    justify="justify-center"
+                    active="variant-filled-primary"
+                    hover="hover:variant-soft-primary"
+                    flex="flex-1 lg:flex-none"
+                    rounded=""
+                    border=""
+                    class="bg-surface-100-800-token w-full"
+                >
+                    <TabAnchor href="/app" selected={$page.url.pathname === '/app'}>
+                        <svelte:fragment slot="lead">
+                            <div class="flex justify-center align-middle">
+                                <HomeIcon />
+                            </div>
+                        </svelte:fragment>
+                        <span>Home</span>
+                    </TabAnchor>
+                    <TabAnchor href="/app/clock" selected={$page.url.pathname === '/app/clock'}>
+                        <svelte:fragment slot="lead">
+                            <div class="flex justify-center align-middle">
+                                <ClockIcon />
+                            </div>
+                        </svelte:fragment>
+                        <span>Clock</span>
+                    </TabAnchor>
+                    <TabAnchor href="/app/account" selected={$page.url.pathname === '/app/account'}>
+                        <svelte:fragment slot="lead">
+                            <div class="flex justify-center align-middle">
+                                <UserIcon />
+                            </div>
+                        </svelte:fragment>
+                        <span>Account</span>
+                    </TabAnchor>
+                </TabGroup>
+            </div>
+        {/if}
+    </svelte:fragment>
 </AppShell>
