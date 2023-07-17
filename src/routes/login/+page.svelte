@@ -25,7 +25,7 @@
 	};
 </script>
 
-<div class="flex items-center justify-center mt-5">
+<div class="flex flex-col items-center justify-center mt-5">
 	<form id="login-form" class="text-center" on:submit={handleSignIn}>
 		<!-- <input name="email" bind:value={email} /> -->
 		<label class="label text-start" for="E-Mail">
@@ -39,7 +39,7 @@
 			/>
 		</label>
         <label class="label text-start" for="Passwort">
-            <span>Passwort</span>
+            <span>Password</span>
             <input
                 class="input mt-3 {errorMessage ? 'input-error' : ''}"
                 title="Passwort"
@@ -48,14 +48,17 @@
                 bind:value={password}
             />
         </label>
-		<button type="submit" class="btn variant-filled-surface mt-3">
+		<button type="submit" class="btn variant-filled-surface mt-3 me-2">
 			Sign in
 		</button>
-        {#if errorMessage}
-        <br>
-            <div class="text-red-600" transition:fade>
-                {errorMessage} <button class="btn btn-sm" on:click={() => (errorMessage = undefined)}>X</button>
-            </div>
-        {/if}
+        <a href="/forgot-password">
+            Forgot password?
+        </a>
 	</form>
+    {#if errorMessage}
+    <br>
+        <div class="text-red-600" transition:fade>
+            {errorMessage} <button class="btn btn-sm" on:click={() => (errorMessage = undefined)}>X</button>
+        </div>
+    {/if}
 </div>
