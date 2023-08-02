@@ -1,63 +1,87 @@
 import { fail, redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from '../login/$types.js'
-import type { Action } from './$types.js';
+import type { Action, Actions } from './$types.js';
+import { getTodayFormatted } from '$lib/helpers/dateHelpers.js';
 
 export const load = (async ({ locals: { supabase, getSession }, parent }) => {
-//   const session = await getSession()
     const { profile } = await parent();
-//   if (!session) {
-//     throw redirect(303, '/')
-//   }
-
-//   const { data: profile } = await supabase
-//     .from('profiles')
-//     .select(`username, full_name, website, avatar_url`)
-//     .eq('id', session.user.id)
-//     .single();
-
     return { profile }
 }) satisfies PageServerLoad;
 
-// export const actions = {
-//   update: (async ({ request, locals: { supabase, getSession } }) => {
-//     const formData = await request.formData()
-//     const fullName = formData.get('fullName') as string
-//     const username = formData.get('username') as string
-//     const website = formData.get('website') as string
-//     const avatarUrl = formData.get('avatarUrl') as string
+type ClockStatus = 'success' | 'error'
 
-//     const session = await getSession()
+export const actions: Actions = {
+    clock_in: async ({ locals: { supabase } }) => {
+        let clockInError = {
+            clock_status: 'error' as ClockStatus,
+            message: 'Could not clock in.'
+        }
+        const { data, error: checkError } = await supabase
+                    .from('timetable')
+                    .select('*')
+                    .filter('clock_in', 'gte', getTodayFormatted())
 
-//     const { error } = await supabase.from('profiles').upsert({
-//       id: session?.user.id,
-//       full_name: fullName,
-//       username,
-//       website,
-//       avatar_url: avatarUrl,
-//       updated_at: new Date(),
-//     })
+        if (checkError && !data) {
+            return fail(500, clockInError);
+        }
 
-//     if (error) {
-//       return fail(500, {
-//         fullName,
-//         username,
-//         website,
-//         avatarUrl,
-//       })
-//     }
+        for (const entry of data) {
+            if (!entry.clock_out) {
+                clockInError.message = 'You need to clock out first.'
+                return fail(400, clockInError);
+            }
+        }
 
-//     return {
-//       fullName,
-//       username,
-//       website,
-//       avatarUrl,
-//     }
-//   }) satisfies Action,
-//   signout: (async ({ locals: { supabase, getSession } }) => {
-//     const session = await getSession()
-//     if (session) {
-//       await supabase.auth.signOut()
-//       throw redirect(303, '/')
-//     }
-//   }) satisfies Action,
-// }
+        const { error: insertError } = await supabase
+                        .from('timetable')
+                        .insert({clock_in: new Date().toISOString()})
+        
+        if (insertError) {
+            return fail(500, clockInError);
+        }
+
+        // if clock in was successful
+        return { 
+            clock_status: 'success' as ClockStatus,
+            message: 'Clocked in!'
+        }
+    },
+
+    clock_out: async ({locals: { supabase }}) => {
+        let clockOutError = {
+            clock_status: 'error' as ClockStatus,
+            message: 'Could not clock out.'
+        }
+
+        const { data, error: checkError } = await supabase
+                    .from('timetable')
+                    .select('*')
+                    .filter('clock_in', 'gte', getTodayFormatted())
+
+        if (checkError && !data) {
+            return fail(500, clockOutError);
+        }
+
+        const latestClockIn = data.reduce((a, b) => new Date(a.clock_in) > new Date(b.clock_in) ? a : b);
+
+        if (latestClockIn.clock_out) {
+            clockOutError.message = 'You\'re already clocked out.'
+            return fail(400, clockOutError);
+        }
+
+        const { error: insertError } = await supabase
+                            .from('timetable')
+                            .update({clock_out: new Date().toISOString()})
+                            .eq('id', latestClockIn.id);
+
+        if (insertError) {
+            return fail(500, clockOutError)
+        }
+
+        // if clock out was successful
+        return {
+            clock_status: 'success' as ClockStatus,
+            message: 'Clocked out!'
+        }
+    }
+}

@@ -13,7 +13,9 @@
 		LightSwitch,
 		Toast,
 		TabGroup,
-		TabAnchor
+		TabAnchor,
+		Modal
+
 	} from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { invalidate, invalidateAll } from '$app/navigation';
@@ -42,8 +44,11 @@
 	};
 </script>
 
+<!-- Modals -->
+<Modal />
+
 <!-- Toast -->
-<Toast position="t" />
+<Toast position="tr" />
 
 <!-- App Shell -->
 <AppShell>
