@@ -9,9 +9,6 @@
 	import ThreeDots from "$lib/icons/ThreeDots.svelte";
 
     export let supabase: SupabaseClient<Database>;
-    // TODO: remove once used 
-    // supress annoying warning
-    $: supabase;
     export let clock_data: Exclude<ClockDataSuccess, null>;
     export let worktimeDayLabel: string = 'Today';
 
@@ -94,6 +91,7 @@
                         </button>
                         <div class="card w-24 shadow-xl py-2 text-center rounded-lg" data-popup="popupCombobox">
                             <ListBox rounded="rounded-none">
+                                <!-- TODO: implement edit -->
                                 <ListBoxItem bind:group={dropdownValue} name="medium" value="edit"
                                             on:click={() => null}>
                                     <div class="font-bold">

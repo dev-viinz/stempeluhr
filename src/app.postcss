@@ -9,3 +9,11 @@ html.dark {
     --date-picker-background: rgb(var(--color-surface-900));
     --date-picker-foreground: rgba(var(--theme-font-color-dark));
 }
+
+.gradient-heading {
+	@apply bg-clip-text text-transparent box-decoration-clone;
+	/* Direction */
+	@apply bg-gradient-to-br;
+	/* Color Stops */
+	@apply from-primary-500 via-tertiary-500 to-secondary-500;
+}
