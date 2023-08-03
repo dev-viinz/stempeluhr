@@ -23,12 +23,16 @@
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import ClockIcon from '$lib/icons/ClockIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
-
+    import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+    import { storePopup } from '@skeletonlabs/skeleton';
+    
+    
 	export let data;
-
+    
 	let { supabase, session, profile } = data;
 	$: ({ supabase, session, profile } = data);
-
+    
+    storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
 	onMount(() => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {

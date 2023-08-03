@@ -1,7 +1,7 @@
 import { fail, redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from '../login/$types.js'
 import type { Action, Actions } from './$types.js';
-import { getTodayFormatted } from '$lib/helpers/dateHelpers.js';
+import { DateTime } from 'luxon';
 
 export const load = (async ({ locals: { supabase, getSession }, parent }) => {
     const { profile } = await parent();
@@ -13,13 +13,13 @@ type ClockStatus = 'success' | 'error'
 export const actions: Actions = {
     clock_in: async ({ locals: { supabase } }) => {
         let clockInError = {
-            clock_status: 'error' as ClockStatus,
+            clock_status: 'error' satisfies ClockStatus,
             message: 'Could not clock in.'
         }
         const { data, error: checkError } = await supabase
                     .from('timetable')
                     .select('*')
-                    .filter('clock_in', 'gte', getTodayFormatted())
+                    .filter('clock_in', 'gte', DateTime.now().toISODate())
 
         if (checkError && !data) {
             return fail(500, clockInError);
@@ -34,7 +34,7 @@ export const actions: Actions = {
 
         const { error: insertError } = await supabase
                         .from('timetable')
-                        .insert({clock_in: new Date().toISOString()})
+                        .insert({clock_in: DateTime.now().toISO() ?? ''})
         
         if (insertError) {
             return fail(500, clockInError);
@@ -42,45 +42,53 @@ export const actions: Actions = {
 
         // if clock in was successful
         return { 
-            clock_status: 'success' as ClockStatus,
+            clock_status: 'success' satisfies ClockStatus,
             message: 'Clocked in!'
         }
     },
 
     clock_out: async ({locals: { supabase }}) => {
         let clockOutError = {
-            clock_status: 'error' as ClockStatus,
+            clock_status: 'error' satisfies ClockStatus,
             message: 'Could not clock out.'
         }
 
         const { data, error: checkError } = await supabase
                     .from('timetable')
                     .select('*')
-                    .filter('clock_in', 'gte', getTodayFormatted())
+                    .filter('clock_in', 'gte', DateTime.now().toISODate())
 
         if (checkError && !data) {
             return fail(500, clockOutError);
         }
 
-        const latestClockIn = data.reduce((a, b) => new Date(a.clock_in) > new Date(b.clock_in) ? a : b);
+        if (data.length === 0) {
+            clockOutError.message = 'You haven\'t clocked in yet';
+            return fail(400, clockOutError);
+        }
+
+        const latestClockIn = data.reduce((a, b) => DateTime.fromISO(a.clock_in) > DateTime.fromISO(b.clock_in) ? a : b);
 
         if (latestClockIn.clock_out) {
             clockOutError.message = 'You\'re already clocked out.'
             return fail(400, clockOutError);
         }
 
+        const clockOutDate = DateTime.now().toISO();
+        if (!clockOutDate) return fail(500, clockOutError);
+
         const { error: insertError } = await supabase
                             .from('timetable')
-                            .update({clock_out: new Date().toISOString()})
+                            .update({ clock_out: clockOutDate })
                             .eq('id', latestClockIn.id);
 
         if (insertError) {
-            return fail(500, clockOutError)
+            return fail(500, clockOutError);
         }
 
         // if clock out was successful
         return {
-            clock_status: 'success' as ClockStatus,
+            clock_status: 'success' satisfies ClockStatus,
             message: 'Clocked out!'
         }
     }

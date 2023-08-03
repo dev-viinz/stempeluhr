@@ -1,16 +1,10 @@
 <script lang="ts">
-	import { draw, fly, scale } from "svelte/transition";
+	import { DateTime } from "luxon";
 
     export let clockSize: ClockSize;
 
 	const refreshTime = () => {
-        const date = new Date();
-        return {
-            hours: date.getHours().toString().padStart(2, '0'),
-            minutes: date.getMinutes().toString().padStart(2, '0'),
-            seconds: date.getSeconds().toString().padStart(2, '0')
-        }
-		// return new Date().toLocaleTimeString(undefined, {hour: "2-digit", minute:"2-digit", second:"2-digit"});
+        return DateTime.now().toFormat('HH:mm');
 	}
 
     let dateString = refreshTime();
@@ -35,6 +29,6 @@
 
 {#key dateString}
     <div class="{getSize()} font-bold">
-        {dateString.hours}:{dateString.minutes}
+        { dateString }
     </div>
 {/key}
