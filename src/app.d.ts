@@ -3,6 +3,10 @@
 // for information about these interfaces
 // and what to do when importing types
 
+// make pwa generator happy
+/// <reference types="vite-plugin-pwa/svelte" />
+/// <reference types="vite-plugin-pwa/info" />
+
 import { SupabaseClient, Session } from '@supabase/supabase-js'
 import type { Database } from './types/supabase'
 

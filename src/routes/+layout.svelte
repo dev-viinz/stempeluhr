@@ -15,7 +15,6 @@
 		TabGroup,
 		TabAnchor,
 		Modal
-
 	} from '@skeletonlabs/skeleton';
 	import { onMount } from 'svelte';
 	import { invalidate, invalidateAll } from '$app/navigation';
@@ -23,22 +22,42 @@
 	import HomeIcon from '$lib/icons/HomeIcon.svelte';
 	import ClockIcon from '$lib/icons/ClockIcon.svelte';
 	import UserIcon from '$lib/icons/UserIcon.svelte';
-    import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
-    import { storePopup } from '@skeletonlabs/skeleton';
-    
-    
+	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
+	import { storePopup } from '@skeletonlabs/skeleton';
+	import { pwaInfo } from 'virtual:pwa-info';
+
 	export let data;
-    
+
 	let { supabase, session, profile } = data;
 	$: ({ supabase, session, profile } = data);
-    
-    storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
-	onMount(() => {
+
+	$: webManifestLink = pwaInfo ? (pwaInfo.webManifest.linkTag as string) : '';
+
+	storePopup.set({ computePosition, autoUpdate, offset, shift, flip, arrow });
+	onMount(async () => {
 		const { data } = supabase.auth.onAuthStateChange((event, _session) => {
 			if (_session?.expires_at !== session?.expires_at) {
 				invalidate('supabase:auth');
 			}
 		});
+
+		if (pwaInfo) {
+			const { useRegisterSW } = await import('virtual:pwa-register/svelte');
+			useRegisterSW({
+				immediate: true,
+				onRegistered(r) {
+					// uncomment following code if you want check for updates
+					r && setInterval(() => {
+					   console.log('Checking for sw update')
+					   r.update()
+					}, 20000 /* 20s for testing purposes */)
+					console.log(`SW Registered: ${r}`);
+				},
+				onRegisterError(error) {
+					console.log('SW registration error', error);
+				}
+			});
+		}
 
 		return () => data.subscription.unsubscribe();
 	});
@@ -47,6 +66,10 @@
 		await invalidateAll();
 	};
 </script>
+
+<svelte:head>
+	{@html webManifestLink}
+</svelte:head>
 
 <!-- Modals -->
 <Modal />
@@ -119,44 +142,44 @@
 	</svelte:fragment>
 	<!-- Page Route Content -->
 	<slot />
-    <svelte:fragment slot="footer">
-        {#if $page.data.session && $page.url.pathname.startsWith('/app')}
-            <div class="contents md:hidden text-center">
-                <TabGroup
-                    justify="justify-center"
-                    active="variant-filled-primary"
-                    hover="hover:variant-soft-primary"
-                    flex="flex-1 lg:flex-none"
-                    rounded=""
-                    border=""
-                    class="bg-surface-100-800-token w-full"
-                >
-                    <TabAnchor href="/app" selected={$page.url.pathname === '/app'}>
-                        <svelte:fragment slot="lead">
-                            <div class="flex justify-center align-middle">
-                                <HomeIcon />
-                            </div>
-                        </svelte:fragment>
-                        <span>Home</span>
-                    </TabAnchor>
-                    <TabAnchor href="/app/clock" selected={$page.url.pathname === '/app/clock'}>
-                        <svelte:fragment slot="lead">
-                            <div class="flex justify-center align-middle">
-                                <ClockIcon />
-                            </div>
-                        </svelte:fragment>
-                        <span>Clock</span>
-                    </TabAnchor>
-                    <TabAnchor href="/app/account" selected={$page.url.pathname === '/app/account'}>
-                        <svelte:fragment slot="lead">
-                            <div class="flex justify-center align-middle">
-                                <UserIcon />
-                            </div>
-                        </svelte:fragment>
-                        <span>Account</span>
-                    </TabAnchor>
-                </TabGroup>
-            </div>
-        {/if}
-    </svelte:fragment>
+	<svelte:fragment slot="footer">
+		{#if $page.data.session && $page.url.pathname.startsWith('/app')}
+			<div class="contents md:hidden text-center">
+				<TabGroup
+					justify="justify-center"
+					active="variant-filled-primary"
+					hover="hover:variant-soft-primary"
+					flex="flex-1 lg:flex-none"
+					rounded=""
+					border=""
+					class="bg-surface-100-800-token w-full"
+				>
+					<TabAnchor href="/app" selected={$page.url.pathname === '/app'}>
+						<svelte:fragment slot="lead">
+							<div class="flex justify-center align-middle">
+								<HomeIcon />
+							</div>
+						</svelte:fragment>
+						<span>Home</span>
+					</TabAnchor>
+					<TabAnchor href="/app/clock" selected={$page.url.pathname === '/app/clock'}>
+						<svelte:fragment slot="lead">
+							<div class="flex justify-center align-middle">
+								<ClockIcon />
+							</div>
+						</svelte:fragment>
+						<span>Clock</span>
+					</TabAnchor>
+					<TabAnchor href="/app/account" selected={$page.url.pathname === '/app/account'}>
+						<svelte:fragment slot="lead">
+							<div class="flex justify-center align-middle">
+								<UserIcon />
+							</div>
+						</svelte:fragment>
+						<span>Account</span>
+					</TabAnchor>
+				</TabGroup>
+			</div>
+		{/if}
+	</svelte:fragment>
 </AppShell>
