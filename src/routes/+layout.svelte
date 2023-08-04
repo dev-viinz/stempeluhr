@@ -25,6 +25,11 @@
 	import { computePosition, autoUpdate, offset, shift, flip, arrow } from '@floating-ui/dom';
 	import { storePopup } from '@skeletonlabs/skeleton';
 	import { pwaInfo } from 'virtual:pwa-info';
+    import { dev } from '$app/environment';
+    import { inject } from '@vercel/analytics';
+    
+    // enables vercel analytics
+    inject({ mode: dev ? 'development' : 'production' });
 
 	export let data;
 
