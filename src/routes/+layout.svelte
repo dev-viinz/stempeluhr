@@ -69,6 +69,8 @@
 
 <svelte:head>
 	{@html webManifestLink}
+    <meta name="theme-color" content="#15171f" media="(prefers-color-scheme: dark)">
+    <meta name="theme-color" content="#dfe0e2" media="(prefers-color-scheme: light)">
 </svelte:head>
 
 <!-- Modals -->
