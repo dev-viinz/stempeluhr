@@ -10,13 +10,16 @@
 	import { enhance } from '$app/forms';
 	import Spinner from '$lib/icons/Spinner.svelte';
 	import TimesTable from '$lib/app/clock/TimesTable.svelte';
+	import { getClocksForDate } from '$lib/db/timeTable';
+	import { DateTime } from 'luxon';
 
 	export let data;
 
     export let form: ActionData;
 
 	// let { session, supabase, profile, clock_data, clock_err } = data
-	$: ({ session, supabase, profile, clock_data, clock_err } = data)
+	$: ({ session, supabase, profile } = data)
+    $: clock_data_promise = getClocksForDate(supabase, DateTime.now())
 
     let loadingClocks = false;
     let loadingClockIn = false;
@@ -108,13 +111,21 @@
     {#if form?.clock_status === 'error'}
         <p class="text-red-600">{form.message}</p>
     {/if}
-    {#if clock_err}
-        <div>{clock_err.message}</div>
-    {:else if !clock_data || clock_data.length === 0}
-        <div>no data</div>
-    {:else}
-        <TimesTable supabase={supabase} clock_data={clock_data} />
-    {/if}
+    {#await clock_data_promise}
+    <!-- TODO: make an actual placeholder table so it doesn't look this bad?? -->
+        <Spinner />
+    {:then { error: clock_err, data: clock_data }}
+        {#if clock_data}
+            <TimesTable
+                supabase={supabase}
+                clock_data={clock_data}
+            />
+        {:else}
+            { clock_err }
+        {/if}
+    {:catch error}
+        <p>{error}</p>
+    {/await}
     <!-- {#if profile?.full_name}
          <h1 class="mt-3">
              Profil von {profile.full_name}
