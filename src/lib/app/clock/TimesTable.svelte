@@ -7,6 +7,7 @@
 	import { modalStore, type ModalComponent, type ModalSettings, type PopupSettings, popup, ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
 	import DeleteTime from "$lib/app/clock/DeleteTime.svelte";
 	import ThreeDots from "$lib/icons/ThreeDots.svelte";
+	import EditTime from "./EditTime.svelte";
 
     export let supabase: SupabaseClient<Database>;
     export let clock_data: Exclude<ClockDataSuccess, null>;
@@ -29,7 +30,7 @@
         totalTime = calculateTotalTime();
     }, 1000);
 
-    const createDeleteModal = (idToDelete: string) => {
+    const createDeleteModal = (idToDelete: string): ModalSettings => {
         const modalComponent: ModalComponent = {
             // Pass a reference to your custom component
             ref: DeleteTime,
@@ -41,7 +42,19 @@
         return {
             type: 'component',
             component: modalComponent
-        } satisfies ModalSettings;
+        };
+    }
+
+    const createEditModal = (idToEdit: string): ModalSettings => {
+        const modalComponent: ModalComponent = {
+            ref: EditTime,
+            props: { supabase: supabase, entryToEdit: idToEdit }
+        };
+        
+        return {
+            type: 'component',
+            component: modalComponent
+        };
     }
 
     let dropdownValue: string = 'choose_action'
@@ -91,9 +104,8 @@
                         </button>
                         <div class="card w-24 shadow-xl py-2 text-center rounded-lg" data-popup="popupCombobox">
                             <ListBox rounded="rounded-none">
-                                <!-- TODO: implement edit -->
                                 <ListBoxItem bind:group={dropdownValue} name="medium" value="edit"
-                                            on:click={() => null}>
+                                            on:click={() => modalStore.trigger(createEditModal(time.id))}>
                                     <div class="font-bold">
                                         Edit
                                     </div>
