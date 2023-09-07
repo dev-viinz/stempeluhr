@@ -51,10 +51,11 @@
             props: { supabase: supabase, entryToEdit: idToEdit }
         };
         
-        return {
+        const modal: ModalSettings = {
             type: 'component',
             component: modalComponent
         };
+        return modal;
     }
 
     let dropdownValue: string = 'choose_action'
@@ -99,10 +100,16 @@
                         <td class="italic">No time set</td>
                     {/if}
                     <td>
-                        <button class="justify-between" use:popup={popupCombobox}>
+                        <button class="justify-between" 
+                                use:popup={{
+                                    event: 'click',
+                                    target: `popupCombobox-${time.id}`,
+                                    placement: 'bottom',
+                                    closeQuery: '.listbox-item'
+                                }}>
                             <ThreeDots />
                         </button>
-                        <div class="card w-24 shadow-xl py-2 text-center rounded-lg" data-popup="popupCombobox">
+                        <div class="card w-24 shadow-xl py-2 text-center rounded-lg" data-popup="popupCombobox-{time.id}">
                             <ListBox rounded="rounded-none">
                                 <ListBoxItem bind:group={dropdownValue} name="medium" value="edit"
                                             on:click={() => modalStore.trigger(createEditModal(time.id))}>

@@ -9,7 +9,6 @@
 	import { DateTime } from "luxon";
 	import type { ClockDataSuccess } from "$lib/db/timeTable";
 
-
     export let supabase: SupabaseClient<Database>;
     export let entryToEdit: string;
     
