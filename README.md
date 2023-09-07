@@ -1,33 +1,31 @@
-# ICON PACK
-https://heroicons.com/
+# Clock IT!
 
+## DISCLAIMER
 
+This is a work in progress and a learning project for myself. There are unconventional or even bad practices being used, sometimes due to lazyness, sometimes because I didn't know any better.  
+The point being that while you're encouraged to help with this project, don't expect a highly professional setting.
 
-# create-svelte
-
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
-
-## Creating a project
-
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies (you can also use npm or yarn instead of pnpm):
+```bash
+pnpm install
+```
+
+Start the supabase backend (requires docker installed):
 
 ```bash
-npm run dev
+pnpm supabase start
+```
+
+Once you've started the supabase backend, start a development server:
+
+```bash
+pnpm run dev
 
 # or start the server and open the app in a new browser tab
-npm run dev -- --open
+pnpm run dev -- --open
 ```
 
 ## Building
@@ -35,9 +33,10 @@ npm run dev -- --open
 To create a production version of your app:
 
 ```bash
-npm run build
+pnpm run build
 ```
 
-You can preview the production build with `npm run preview`.
+You can preview the production build with `pnpm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+### Icon Pack used:
+https://heroicons.com/
