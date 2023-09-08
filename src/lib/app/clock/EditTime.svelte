@@ -30,10 +30,10 @@
 
     const editEntry = async () => {
         let newStartDate = DateTime.fromISO(dbData.clock_in).set({hour: parseInt(startDate.slice(0, 2)), minute: parseInt(startDate.slice(-2))});
-        let newEndDate = DateTime.fromISO(dbData.clock_in).set({hour: parseInt(endDate.slice(0, 2)), minute: parseInt(endDate.slice(-2))});
+        let newEndDate = endDate ? DateTime.fromISO(dbData.clock_in).set({hour: parseInt(endDate.slice(0, 2)), minute: parseInt(endDate.slice(-2))}) : null;
         const { error } = await supabase
                         .from('timetable')
-                        .update({clock_in: newStartDate.toISO()!, clock_out: newEndDate.toISO()})
+                        .update({clock_in: newStartDate.toISO()!, clock_out: newEndDate ? newEndDate.toISO() : newEndDate})
                         .eq('id', entryToEdit)
         // TODO: handle error?
         if (error) {
