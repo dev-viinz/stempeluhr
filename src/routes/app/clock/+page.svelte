@@ -19,7 +19,6 @@
 <div class="flex flex-col gap-y-4 items-center justify-center">
     <Clock clockSize="large" />
     <DatePicker bind:value={dumbDate} locale={getLocaleDefaults()} />
-    <p>selected date: {selectedDate.toISO()}</p>
     {#await clock_data_promise}
         <Spinner />
     {:then { error: clock_err, data: clock_data }}
@@ -27,7 +26,7 @@
             <TimesTable
                 supabase={supabase}
                 clock_data={clock_data}
-                worktimeDayLabel={selectedDate.toFormat('dd:MM:yyyy')}
+                worktimeDayLabel={selectedDate.toFormat('dd.MM.yyyy')}
             />
         {:else}
             { clock_err }
