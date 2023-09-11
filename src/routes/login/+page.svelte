@@ -2,7 +2,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import Spinner from '$lib/icons/Spinner.svelte';
-	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 	import { fade } from 'svelte/transition';
 
 	export let data;
@@ -15,6 +15,8 @@
 	let password: string;
 
     let isLoggingIn = false;
+    
+    const toastStore = getToastStore();
 
 	const handleSignIn = async () => {
         isLoggingIn = true;
