@@ -4,7 +4,7 @@
 	import type { ClockDataSuccess } from "$lib/db/timeTable";
     import { formatDate } from "$lib/helpers/timeHelpers"
 	import { DateTime, Duration } from "luxon";
-	import { modalStore, type ModalComponent, type ModalSettings, type PopupSettings, popup, ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
+	import { getModalStore, type ModalComponent, type ModalSettings, type PopupSettings, popup, ListBox, ListBoxItem } from "@skeletonlabs/skeleton";
 	import DeleteTime from "$lib/app/clock/DeleteTime.svelte";
 	import ThreeDots from "$lib/icons/ThreeDots.svelte";
 	import EditTime from "./EditTime.svelte";
@@ -12,6 +12,8 @@
     export let supabase: SupabaseClient<Database>;
     export let clock_data: Exclude<ClockDataSuccess, null>;
     export let worktimeDayLabel: string = 'Today';
+
+    const modalStore = getModalStore();
 
     const calculateTotalTime = () => {
         let time: Duration = Duration.fromMillis(0);

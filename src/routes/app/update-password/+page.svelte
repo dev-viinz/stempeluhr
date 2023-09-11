@@ -2,10 +2,12 @@
 	import { goto } from '$app/navigation';
 	import { fade } from 'svelte/transition';
 
-	import { toastStore, type ToastSettings } from '@skeletonlabs/skeleton';
+	import { getToastStore, type ToastSettings } from '@skeletonlabs/skeleton';
 
 	export let data;
 	let { supabase } = data;
+
+    const toastStore = getToastStore();
 
 	let newPassword: string = '';
 	let newPasswordRepeat: string = '';

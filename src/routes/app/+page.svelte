@@ -4,7 +4,7 @@
 	import Clock from '$lib/app/clock/Clock.svelte';
 	import Inbox from '$lib/icons/Inbox.svelte';
 	import Out from '$lib/icons/Out.svelte';
-	import { modalStore, toastStore } from '@skeletonlabs/skeleton';
+	import { getModalStore, getToastStore } from '@skeletonlabs/skeleton';
 	import type { ModalSettings, ToastSettings } from '@skeletonlabs/skeleton';
 	import type { ActionData } from './$types.js';
 	import { enhance } from '$app/forms';
@@ -16,6 +16,9 @@
 	export let data;
 
     export let form: ActionData;
+
+    const modalStore = getModalStore();
+    const toastStore = getToastStore();
 
 	// let { session, supabase, profile, clock_data, clock_err } = data
 	$: ({ session, supabase, profile } = data)

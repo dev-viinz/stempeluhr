@@ -2,7 +2,7 @@
 	import type { SupabaseClient } from "@supabase/supabase-js";
 	import type { Database } from "../../../types/supabase";
 	import { invalidateAll } from "$app/navigation";
-	import { modalStore } from "@skeletonlabs/skeleton";
+	import { getModalStore } from "@skeletonlabs/skeleton";
 	import Spinner from "$lib/icons/Spinner.svelte";
 	import { onMount } from "svelte";
 	import { error } from "@sveltejs/kit";
@@ -11,6 +11,8 @@
 
     export let supabase: SupabaseClient<Database>;
     export let entryToEdit: string;
+    
+    const modalStore = getModalStore();
     
     let startDate: string;
     let endDate: string;

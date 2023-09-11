@@ -2,7 +2,7 @@
 	import type { SupabaseClient } from "@supabase/supabase-js";
 	import type { Database } from "../../../types/supabase";
 	import { invalidateAll } from "$app/navigation";
-	import { modalStore } from "@skeletonlabs/skeleton";
+	import { getModalStore } from "@skeletonlabs/skeleton";
 
 
     export let supabase: SupabaseClient<Database>;
@@ -11,6 +11,7 @@
     // idk
     export let parent: any;
     $: parent;
+    const modalStore = getModalStore();
 
     const deleteEntry = async () => {
         const { error } = await supabase
