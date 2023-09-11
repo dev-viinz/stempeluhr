@@ -8,24 +8,24 @@ The point being that while you're encouraged to help with this project, don't ex
 
 ## Developing
 
-Install dependencies (this repo uses bun!):
+Install dependencies (you can also use npm or yarn instead of pnpm):
 ```bash
-bun install
+pnpm install
 ```
 
 Start the supabase backend (requires docker installed):
 
 ```bash
-bun supabase start
+pnpm supabase start
 ```
 
 Once you've started the supabase backend, start a development server:
 
 ```bash
-bun run dev
+pnpm run dev
 
 # or start the server and open the app in a new browser tab
-bun run dev -- --open
+pnpm run dev -- --open
 ```
 
 ## Building
@@ -33,10 +33,10 @@ bun run dev -- --open
 To create a production version of your app:
 
 ```bash
-bun run build
+pnpm run build
 ```
 
-You can preview the production build with `bun run preview`.
+You can preview the production build with `pnpm run preview`.
 
 ### Icon Pack used:
 https://heroicons.com/
