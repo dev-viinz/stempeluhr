@@ -8,10 +8,13 @@
 	import DeleteTime from "$lib/app/clock/DeleteTime.svelte";
 	import ThreeDots from "$lib/icons/ThreeDots.svelte";
 	import EditTime from "./EditTime.svelte";
+    import AddTime from "./AddTime.svelte";
 
     export let supabase: SupabaseClient<Database>;
     export let clock_data: Exclude<ClockDataSuccess, null>;
     export let worktimeDayLabel: string = 'Today';
+
+    $: currentDate = worktimeDayLabel === 'Today' ? DateTime.now() : DateTime.fromFormat(worktimeDayLabel, 'dd.MM.yyyy');
 
     const modalStore = getModalStore();
 
@@ -60,9 +63,22 @@
         return modal;
     }
 
+    const createAddModal = (date: DateTime): ModalSettings => {
+        const modalComponent: ModalComponent = {
+            ref: AddTime,
+            props: { supabase: supabase, date: date }
+        };
+        
+        const modal: ModalSettings = {
+            type: 'component',
+            component: modalComponent
+        };
+        return modal;
+    }
+
     let dropdownValue: string = 'choose_action'
 
-    // hack in order to prevent werid coloring
+    // hack in order to prevent weird coloring
     $: {
         if (dropdownValue) {
             dropdownValue = 'choose_action'
@@ -87,6 +103,11 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td colspan="3" class="text-center" style="padding: 0px;">
+                    <button class="btn text-3xl w-full" on:click={() => modalStore.trigger(createAddModal(currentDate))}>+</button>
+                </td>
+            </tr>
             {#each clock_data as time}
                 <tr>
                     <td>
