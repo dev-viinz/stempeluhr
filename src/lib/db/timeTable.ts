@@ -7,6 +7,7 @@ export type ClockDataSuccess = ClockDataRaw['data']
 export type ClockDataError = ClockDataRaw['error']
 
 export const getClocksForDate = async (supabase: SupabaseClient<Database>, date: DateTime) => {
+    date = date.set({ hour: 0, minute: 0, second: 0, millisecond: 0 });
     const endDate = date.plus({ days: 1 }).toFormat('yyyy-MM-ddZ');
     return await supabase
             .from('timetable')
