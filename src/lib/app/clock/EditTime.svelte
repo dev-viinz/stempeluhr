@@ -67,7 +67,6 @@
             if (entry.id === entryToEdit) continue;
             if (entry.clock_out === null) return 'You have to clock out first.';
             if (checkIfTimeSpansIntersect(start, end, DateTime.fromISO(entry.clock_in), DateTime.fromISO(entry.clock_out))) {
-                console.log(entry.clock_in);
                 return 'Time spans must not intersect.';
             }
         }
