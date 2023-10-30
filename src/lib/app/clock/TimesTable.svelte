@@ -9,6 +9,7 @@
 	import ThreeDots from "$lib/icons/ThreeDots.svelte";
 	import EditTime from "./EditTime.svelte";
     import AddTime from "./AddTime.svelte";
+	import Clock from "./Clock.svelte";
 
     export let supabase: SupabaseClient<Database>;
     export let clock_data: Exclude<ClockDataSuccess, null>;
@@ -18,6 +19,34 @@
 
     const modalStore = getModalStore();
 
+    const halfHour = Duration.fromObject({ minutes: 30 });
+    const threeQuarterHour = Duration.fromObject({ minutes: 45 });
+
+    const calculatePauseToSubtract = () => {
+        if (!totalTime) return Duration.fromISO('00:00:00');
+        const actualTime = totalTime;
+        if (actualTime.as('hours') < 6) return Duration.fromMillis(0);
+        else if (actualTime.as('hours') < 9) return halfHour;
+        else return threeQuarterHour;
+    }
+    
+    const calculatePauseAlreadyTaken = () => {
+        if (!clock_data) return Duration.fromMillis(0);
+        // let pause: Duration = Duration.fromMillis(0);
+        let milliPause = 0;
+        let lastTimestamp: string | null = null;
+        const reversed_clockdata = clock_data.slice().reverse();
+        for (const [i, entry] of reversed_clockdata.entries()) {
+            if (i == 0) {
+                continue;
+            } else {
+                const diff = DateTime.fromISO(entry.clock_in).diff(DateTime.fromISO(reversed_clockdata[i-1].clock_out!)).normalize();
+                milliPause += diff.toMillis();
+            }
+        }
+        return Duration.fromMillis(milliPause);
+    }
+
     const calculateTotalTime = () => {
         let time: Duration = Duration.fromMillis(0);
         if (!clock_data) return time;
@@ -26,7 +55,7 @@
             const diff = clock_out.diff(DateTime.fromISO(entry.clock_in))
             time = time.plus(diff);
         }
-        return time.toFormat('hh:mm:ss');
+        return time;
         // return msToHMS(time);
     }
 
