@@ -1,4 +1,4 @@
-import { fail, redirect } from '@sveltejs/kit'
+import { ActionFailure, fail, redirect } from '@sveltejs/kit'
 import type { PageServerLoad } from '../login/$types.js'
 import type { Action, Actions } from './$types.js';
 import { DateTime } from 'luxon';
@@ -10,12 +10,19 @@ export const load = (async ({ locals: { supabase, getSession }, parent }) => {
 
 type ClockStatus = 'success' | 'error'
 
+export type ClockReturnMessage = {
+    clock_status: ClockStatus,
+    message: string
+}
+
 export const actions: Actions = {
     clock_in: async ({ locals: { supabase } }) => {
-        let clockInError = {
+        let clockInError: ClockReturnMessage = {
             clock_status: 'error' satisfies ClockStatus,
             message: 'Could not clock in.'
         }
+
+        const clockInTime = DateTime.now().toISO()!;
         const { data, error: checkError } = await supabase
                     .from('timetable')
                     .select('*')
@@ -27,14 +34,18 @@ export const actions: Actions = {
 
         for (const entry of data) {
             if (!entry.clock_out) {
-                clockInError.message = 'You need to clock out first.'
+                clockInError.message = 'You need to clock out first.';
+                return fail(400, clockInError);
+            }
+            if (DateTime.fromISO(entry.clock_out) > DateTime.fromISO(clockInTime)) {
+                clockInError.message = 'You\'ve already clocked out after the current time.';
                 return fail(400, clockInError);
             }
         }
 
         const { error: insertError } = await supabase
                         .from('timetable')
-                        .insert({clock_in: DateTime.now().toISO() ?? ''})
+                        .insert({clock_in: clockInTime ?? ''})
         
         if (insertError) {
             return fail(500, clockInError);
@@ -44,7 +55,7 @@ export const actions: Actions = {
         return { 
             clock_status: 'success' satisfies ClockStatus,
             message: 'Clocked in!'
-        }
+        } as ClockReturnMessage;
     },
 
     clock_out: async ({locals: { supabase }}) => {

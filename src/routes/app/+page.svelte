@@ -15,7 +15,7 @@
 
 	export let data;
 
-    export let form: ActionData;
+    // export let form: ActionData;
 
     const modalStore = getModalStore();
     const toastStore = getToastStore();
@@ -52,18 +52,22 @@
             loadingClockIn = true;
             return async ({ update, result }) => {
                 await update();
-                // switch (result.type) {
-                //     case 'success':
-                //         toastStore.trigger(makeSuccessToast())
-                //         break;
-
-                //     case 'error' || 'failure':
-                //         toastStore.trigger(makeErrorToast())
-                //         break;
                 
-                //     default:
-                //         break;
-                // }
+                // @ts-ignore this is a hack to get the type to work
+                const formData = result.data;
+
+                switch (result.type) {
+                    case 'success':
+                        toastStore.trigger(makeSuccessToast(formData.message))
+                        break;
+
+                    case 'failure':
+                        toastStore.trigger(makeErrorToast(formData.message))
+                        break;
+                
+                    default:
+                        break;
+                }
                 loadingClocks = false;
                 loadingClockIn = false;
             }
@@ -81,18 +85,21 @@
             loadingClocks = true;
             loadingClockOut = true;
             return async ({ update, result, formData }) => {
-                // switch (result.type) {
-                //     case 'success':
-                //         toastStore.trigger(makeSuccessToast())
-                //         break;
+                // @ts-ignore this is a hack to get the type to work
+                const formData2 = result.data;
 
-                //     case 'error' || 'failure':
-                //         toastStore.trigger(makeErrorToast())
-                //         break;
+                switch (result.type) {
+                    case 'success':
+                        toastStore.trigger(makeSuccessToast(formData2.message))
+                        break;
+
+                    case 'failure':
+                        toastStore.trigger(makeErrorToast(formData2.message))
+                        break;
                 
-                //     default:
-                //         break;
-                // }
+                    default:
+                        break;
+                }
                 await update();
                 loadingClocks = false;
                 loadingClockOut = false;
@@ -108,12 +115,12 @@
             </button>
         </form>
     </div>
-    {#if form?.clock_status === 'success'}
+    <!-- {#if form?.clock_status === 'success'}
         <p class="text-green-600">{form.message}</p>
     {/if}
     {#if form?.clock_status === 'error'}
         <p class="text-red-600">{form.message}</p>
-    {/if}
+    {/if} -->
     {#await clock_data_promise}
     <!-- TODO: make an actual placeholder table so it doesn't look this bad?? -->
         <Spinner />
