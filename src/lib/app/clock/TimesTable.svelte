@@ -30,9 +30,25 @@
         // return msToHMS(time);
     }
 
+    const calculateTotalTimeWithPause = () => {
+        let totalTime = calculateTotalTime();
+        const pauseToTake = calculatePauseToSubtract().minus(calculatePauseAlreadyTaken());
+        if (pauseToTake.isValid && pauseToTake.toMillis() > 0) {
+            totalTime = totalTime.minus(pauseToTake)
+        }
+        return totalTime;
+    }
+    
     $: totalTime = calculateTotalTime();
+    $: pauseToTake = calculatePauseToSubtract();
+    $: pauseTaken = calculatePauseAlreadyTaken();
+    $: actualTime = calculateTotalTimeWithPause();
+
     setInterval(() => {
         totalTime = calculateTotalTime();
+        pauseToTake = calculatePauseToSubtract();
+        pauseTaken = calculatePauseAlreadyTaken();
+        actualTime = calculateTotalTimeWithPause();
     }, 1000);
 
     const createDeleteModal = (idToDelete: string): ModalSettings => {
@@ -154,7 +170,18 @@
         </tbody>
         <tfoot>
             <tr>
-                <th colspan="3">Worktime for {worktimeDayLabel}: {totalTime}</th>
+                <th>
+                    Pause already Taken: {pauseTaken.isValid ? pauseTaken.toFormat('hh:mm:ss') : 'Calculating...'}
+                </th>
+                <th>
+                    Pause to take: {pauseToTake.toFormat('hh:mm:ss')}
+                </th>
+            </tr>
+            <tr>
+                <th>Worktime for {worktimeDayLabel}: {totalTime.toFormat('hh:mm:ss')}</th>
+                <th>
+                    Actual Worktime: {actualTime.toFormat('hh:mm:ss')}
+                </th>
             </tr>
         </tfoot>
     </table>
